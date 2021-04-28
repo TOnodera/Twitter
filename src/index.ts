@@ -25,7 +25,7 @@ app.get('/streams', (req: Request, res: Response) => {
 
     stream.on('data', (event: any) => {
         if (event) {
-            res.write(JSON.stringify({ url: event.profile_background_image_url_https });
+            res.write(JSON.stringify({ text: event.text, url: event.profile_background_image_url_https }));
         }
     });
 
