@@ -1,16 +1,11 @@
-import cors from 'cors';
-import Express, { Request, Response } from 'express';
+import { app } from './server';
+import { corsSetting } from './setting';
+import { Request, Response } from 'express';
 import moment = require('moment');
 import { stream } from './stream';
 
 
-const app: Express.Application = Express();
-const corsOptions = {
-    origin: `${process.env.WEB_SERVER_URL}:${process.env.WEB_SERVER_PORT}`,
-    credentials: true
-}
-
-app.get('/streams', cors(corsOptions), (req: Request, res: Response) => {
+app.get('/streams', corsSetting, (req: Request, res: Response) => {
 
     //sseでの接続を宣言
     res.writeHead(200, {
