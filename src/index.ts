@@ -1,20 +1,16 @@
-require('dotenv').config();
+import cors from 'cors';
 import Express, { Request, Response } from 'express';
-
-const Twitter = require('twitter');
-const client = new Twitter({
-    consumer_key: process.env.API_KEY,
-    consumer_secret: process.env.API_KEY_SECRET,
-    access_token_key: process.env.ACCESS_TOKEN,
-    access_token_secret: process.env.ACCESS_TOKEN_SECRET
-});
-
-const stream = client.stream('statuses/filter', { track: 'hello' });
-
+import moment = require('moment');
+import { stream } from './stream';
 
 
 const app: Express.Application = Express();
-app.get('/streams', (req: Request, res: Response) => {
+const corsOptions = {
+    origin: `${process.env.WEB_SERVER_URL}:${process.env.WEB_SERVER_PORT}`,
+    credentials: true
+}
+
+app.get('/streams', cors(corsOptions), (req: Request, res: Response) => {
 
     //sseでの接続を宣言
     res.writeHead(200, {
@@ -25,13 +21,21 @@ app.get('/streams', (req: Request, res: Response) => {
 
     stream.on('data', (event: any) => {
         if (event) {
-            res.write(JSON.stringify({ text: event.text, url: event.profile_background_image_url_https }));
+            const datetime = moment(new Date(event.created_at));
+            const date = datetime.format("YYYY-MM-DD");
+            const time = datetime.format("h:mm:ss");
+            const dayOfMonth = datetime.format("MM/DD");
+            if (event.user) {
+                res.write("data: " + JSON.stringify({ name: event.user.name, text: event.text, src: event.user.profile_background_image_url_https, date: date, time: time, dayOfMonth: dayOfMonth, urls: event.entities.urls }));
+                res.write("\n\n");//sseのフォーマットに沿って１つのメッセージの終わりに改行２ついれる
+            }
+
         }
     });
 
 });
 
-app.listen(3000, () => {
+app.listen(process.env.APP_SERVER_PORT, () => {
     console.log("listening start...");
 });
 
