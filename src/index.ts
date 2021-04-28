@@ -9,7 +9,7 @@ const client = new Twitter({
     access_token_secret: process.env.ACCESS_TOKEN_SECRET
 });
 
-const stream = client.stream('statuses/filter', { track: 'こんにちは' });
+const stream = client.stream('statuses/filter', { track: 'hello' });
 
 
 
