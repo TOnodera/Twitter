@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import moment = require('moment');
 import { stream } from './stream';
 import Messages from './messages';
+import { corsSetting } from './setting';
 
 
 stream.on('data', (event: any) => {
@@ -52,5 +53,6 @@ app.get('/start', (req: Request, res: Response) => {
 //サーバー起動
 app.listen(process.env.APP_SERVER_PORT, () => {
     console.log("listening start...");
+    console.log(corsSetting);
 });
 
