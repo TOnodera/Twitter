@@ -18,7 +18,9 @@ class Messages {
     }
 
     private static messageCallback(message: Message) {
-        this.handler(message);
+        if (this.handler != undefined) {
+            this.handler(message);
+        }
     }
 
     static get(): Message[] {
