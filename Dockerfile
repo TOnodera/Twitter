@@ -4,7 +4,9 @@ WORKDIR /app
 
 COPY . /app
 
-RUN npm i && npm run build 
+
+
+RUN mkdir dist && npm i && npm run build 
 
 EXPOSE 3000
 
