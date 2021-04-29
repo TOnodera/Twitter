@@ -4,6 +4,7 @@ interface Url {
 }
 
 interface Message {
+    id: number,
     name: string,
     text: string,
     src: string,

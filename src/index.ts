@@ -3,14 +3,31 @@ import { Request, Response } from 'express';
 import moment = require('moment');
 import { stream } from './stream';
 
+//ユーザー定義タイプガード
+const isImplmentsMessage = (arg: any): arg is Message => {
+    return arg != null &&
+        typeof arg.name == 'string' &&
+        typeof arg.text == 'string' &&
+        typeof arg.src == 'string' &&
+        typeof arg.date == 'string' &&
+        typeof arg.time == 'string' &&
+        typeof arg.dayOfMonth == 'string' &&
+        typeof arg.urls == 'object';
+}
+
 //インメモリでメッセージを100件保持しておく
 const messages: Message[] = [];
-const messagesProxy = new Proxy(messages, {
-    set: (obj, prop, message: Message) => {
+
+//Messageの変更監視するためにプロキシ
+const messagesProxy = {
+    set: (message: Message) => {
+        messages.unshift(message);
         messageCallback(message);
-        return true;
+        if (messages.length >= 100) {
+            messages.pop();
+        }
     }
-});
+};
 
 //ハンドラ
 let handler = (message: Message) => { };
@@ -36,12 +53,10 @@ stream.on('data', (event: any) => {
 
         if (event.user) {
 
-            const message: Message = { name: event.user.name, text: event.text, src: event.user.profile_background_image_url_https, date: date, time: time, dayOfMonth: dayOfMonth, urls: event.entities.urls };
-            messagesProxy.unshift(message);
+            const src: string = event.user.profile_background_image_url_https == 'unkown' ? '' : event.user.profile_background_image_url_https
+            const message: Message = { id: event.id, name: event.user.name, text: event.text, src: src, date: date, time: time, dayOfMonth: dayOfMonth, urls: event.entities.urls };
 
-            if (messagesProxy.length > 100) {
-                messagesProxy.pop();
-            }
+            messagesProxy.set(message);
 
         }
 
@@ -62,6 +77,7 @@ app.get('/streams', (req: Request, res: Response) => {
 
     //Messageを監視して変更があったらデータ送信
     handler = (message: Message) => {
+        //console.log(message.id_str, message.name, moment(new Date()).format('YYYY-MM-DD h:mm:ss'));
         res.write("data: " + JSON.stringify(message));
         res.write("\n\n");
     };
