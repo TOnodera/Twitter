@@ -1,8 +1,12 @@
 require('dotenv').config();
 import cors from 'cors';
 
+const origin = process.env.NODE_ENV == 'prod'
+    ? `${process.env.WEB_SERVER_URL}:${process.env.WEB_SERVER_PORT}`
+    : 'http://localhost';
+
 const corsOptions = {
-    origin: `${process.env.WEB_SERVER_URL}:${process.env.WEB_SERVER_PORT}`,
+    origin: origin,
     credentials: true
 }
 
