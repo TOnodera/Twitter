@@ -8,6 +8,8 @@ const corsOptions = {
 
 const corsSetting = cors(corsOptions);
 
+console.log(corsOptions);
+
 export {
     corsSetting
 }
