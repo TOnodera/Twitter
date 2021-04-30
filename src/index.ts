@@ -42,10 +42,12 @@ app.get('/streams', (req: Request, res: Response) => {
     });
 
     //メッセージ来たら出力するだけ
-    emitter.on('accept:message', (message: Message) => {
-        res.write("data: " + JSON.stringify(message));
-        res.write("\n\n");
-    });
+    if (emitter.listenerCount('accept:message') == 0) {
+        emitter.on('accept:message', (message: Message) => {
+            res.write("data: " + JSON.stringify(message));
+            res.write("\n\n");
+        });
+    }
 
 });
 
