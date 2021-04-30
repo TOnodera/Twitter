@@ -15,7 +15,7 @@ app.get('/streams', async (req: Request, res: Response) => {
     });
 
     while (true) {
-        const message: Messages = await get();
+        const message: Messages = await get(); //awaitでメッセージの受信待ち
         res.write("data: " + JSON.stringify(message));
         res.write("\n\n");
     }
