@@ -15,7 +15,7 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
-    "rootDir": "./src"
+    "rootDir": "/"
   },
   "keywords": [],
   "author": "",
