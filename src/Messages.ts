@@ -1,3 +1,4 @@
+import { Response } from "express";
 
 class Messages {
 
@@ -6,16 +7,19 @@ class Messages {
     private static MAX_CACHE_NUM = 100;
 
     static set(message: Message) {
-        this.messages.unshift(message);
-        if (this.messages.length >= this.MAX_CACHE_NUM) {
-            this.messages.pop();
+        Messages.messages.unshift(message);
+        if (Messages.messages.length >= Messages.MAX_CACHE_NUM) {
+            Messages.messages.pop();
         }
     }
 
-    static get(): Message[] {
+    static cache(): Message[] {
         return Messages.messages;
     }
 
+    static * generator() {
+        yield* Messages.messages.reverse();
+    }
 }
 
 export default Messages;
