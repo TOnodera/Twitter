@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 import { get } from './stream';
 import Messages from './Messages';
 
-
 app.get('/streams', async (req: Request, res: Response) => {
 
 
