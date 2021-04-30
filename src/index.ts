@@ -2,9 +2,10 @@ import { app } from './server';
 import { Request, Response } from 'express';
 import moment = require('moment');
 import { stream } from './stream';
-import Messages from './messages';
-import { corsSetting } from './setting';
+import Messages from './Messages';
+import EventEmitter = require('events');
 
+const emitter = new EventEmitter();
 
 stream.on('data', (event: any) => {
 
@@ -19,7 +20,9 @@ stream.on('data', (event: any) => {
         const src: string = event.user.profile_background_image_url_https == 'unkown' ? '' : event.user.profile_background_image_url_https
         const message: Message = { id: event.id, name: event.user.name, text: event.text, src: src, date: date, time: time, dayOfMonth: dayOfMonth, urls: event.entities.urls };
 
-        //新たに受信したメッセージをMessagesオブジェクト内の配列に突っ込む
+        //新たに受信したメッセージを通知
+        emitter.emit('accept:message', message);
+        //キャッシュ用
         Messages.set(message);
 
     }
@@ -30,15 +33,16 @@ stream.on('data', (event: any) => {
 
 app.get('/streams', (req: Request, res: Response) => {
 
+
     //sseでの接続を宣言
     res.writeHead(200, {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
-        Connection: 'keep-alive',
+        'Connection': 'keep-alive',
     });
 
-    //Message内の配列を監視して変更があったらデータ送信
-    Messages.handle((message: Message) => {
+    //メッセージ来たら出力するだけ
+    emitter.on('accept:message', (message: Message) => {
         res.write("data: " + JSON.stringify(message));
         res.write("\n\n");
     });
@@ -53,6 +57,5 @@ app.get('/start', (req: Request, res: Response) => {
 //サーバー起動
 app.listen(process.env.APP_SERVER_PORT, () => {
     console.log("listening start...");
-    console.log(corsSetting);
 });
 
