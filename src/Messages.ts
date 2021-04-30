@@ -16,10 +16,6 @@ class Messages {
     static cache(): Message[] {
         return Messages.messages;
     }
-
-    static * generator() {
-        yield* Messages.messages.reverse();
-    }
 }
 
 export default Messages;
