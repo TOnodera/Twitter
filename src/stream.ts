@@ -1,5 +1,3 @@
-import Messages from "./Messages";
-
 require('dotenv').config();
 const moment = require('moment');
 const Twitter = require('twitter');
@@ -34,5 +32,11 @@ function get(): Promise<Message> {
     });
 }
 
+async function* generator() {
+    while (true) {
+        yield await get();
+    }
+}
 
-export { get };
+
+export { generator };

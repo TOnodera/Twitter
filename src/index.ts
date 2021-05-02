@@ -1,6 +1,6 @@
 import { app } from './server';
 import { Request, Response } from 'express';
-import { get } from './stream';
+import { generator } from './stream';
 import Messages from './Messages';
 
 app.get('/streams', async (req: Request, res: Response) => {
@@ -13,8 +13,7 @@ app.get('/streams', async (req: Request, res: Response) => {
         'Connection': 'keep-alive',
     });
 
-    while (true) {
-        const message: Message = await get(); //awaitでメッセージの受信待ち
+    for await (const message of generator()) {
         Messages.set(message); //キャッシュ用
         res.write("data: " + JSON.stringify(message));
         res.write("\n\n");
