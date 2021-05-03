@@ -1,10 +1,8 @@
 FROM node:14
 
-WORKDIR /app
+WORKDIR /home/node/app
 
-COPY . /app
-
-
+COPY ./ /home/node/app
 
 RUN mkdir dist && npm i && npm run build 
 

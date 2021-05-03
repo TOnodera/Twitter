@@ -1,9 +1,9 @@
 import { app } from './server';
 import { Request, Response } from 'express';
-import { generator } from './stream';
+import { generator } from './generator';
 import Messages from './Messages';
 
-const launch = () => {
+const launch = (stream: any) => {
     app.get('/streams', async (req: Request, res: Response) => {
 
 
@@ -14,7 +14,7 @@ const launch = () => {
             'Connection': 'keep-alive',
         });
 
-        for await (const message of generator()) {
+        for await (const message of generator(stream)) {
             Messages.set(message); //キャッシュ用
             res.write("data: " + JSON.stringify(message));
             res.write("\n\n");
