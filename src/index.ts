@@ -1,10 +1,5 @@
-import launch from './launch';
-import clustor from 'cluster';
-import os from 'os';
-import stream from './stream';
-
-const cpus = os.cpus();
-
+import launch from "./launch";
+import stream from "./stream";
 
 /*
 //クラスタ化実行してサーバ
