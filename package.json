@@ -10,7 +10,7 @@
     "tsc": "tsc",
     "build": "npm-run-all clean tsc",
     "start": "npm run pm2",
-    "pm2": "$(npm bin)/pm2 start ./dist/index.js --name sse-server",
+    "pm2": "$(npm bin)/pm2 --no-daemon start ./dist/index.js --name sse-server",
     "pm2:stop": "$(npm bin)/pm2 stop sse-server",
     "pm2:logs": "$(npm bin)/pm2 logs sse-server",
     "pm2:monit": "$(npm bin)/pm2 monit",
