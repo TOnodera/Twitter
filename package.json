@@ -10,6 +10,10 @@
     "tsc": "tsc",
     "build": "npm-run-all clean tsc",
     "start": "node --trace-warnings ./dist/index.js",
+    "pm2": "$(npm bin)/pm2 start ./dist/index.js --name sse-server",
+    "pm2:stop": "$(npm bin)/pm2 stop sse-server",
+    "pm2:logs": "$(npm bin)/pm2 logs sse-server",
+    "pm2:monit": "$(npm bin)/pm2 monit",
     "test": "jest"
   },
   "jest": {
@@ -26,6 +30,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "moment": "^2.29.1",
+    "pm2": "^4.5.6",
     "tsconfig-paths": "^3.9.0",
     "twitter": "^1.7.1"
   },
