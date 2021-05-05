@@ -33,12 +33,7 @@ const launch = (stream: any) => {
   });
 
   process.on("unhandledRejection", (reason, p) => {
-    logger.fatal(
-      "補足されない例外を検出しました。プロセスを終了します。:",
-      p,
-      "reason:",
-      reason
-    );
+    logger.fatal(`補足されない例外を検出しました。プロセスを終了します。: ${p},reason: ${reason}`);
   });
 };
 
