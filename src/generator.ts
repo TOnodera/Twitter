@@ -1,7 +1,8 @@
 import moment from "moment";
+import { logger } from "./utility";
 
 function get(stream: any): Promise<Message> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         stream.once('data', (event: any) => {
 
             const datetime = moment(new Date(event.created_at));
@@ -16,7 +17,8 @@ function get(stream: any): Promise<Message> {
 
                 //新たに受信したメッセージを通知
                 resolve(message);
-
+            } else {
+                reject(event);
             }
         });
     });
@@ -24,7 +26,11 @@ function get(stream: any): Promise<Message> {
 
 async function* generator(stream: any) {
     while (true) {
-        yield await get(stream);
+        try {
+            yield await get(stream);
+        } catch (e) {
+            logger.debug("event.userが無いのでエラーを投げました");
+        }
     }
 }
 

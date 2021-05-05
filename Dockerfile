@@ -4,7 +4,7 @@ WORKDIR /home/node/app
 
 COPY ./ /home/node/app
 
-RUN mkdir dist && npm i && npm run build 
+RUN npm i && npm run build 
 
 EXPOSE 3000
 
