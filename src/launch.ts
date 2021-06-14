@@ -1,9 +1,10 @@
 import { app } from "./server";
 import { Request, Response } from "express";
-import { generator } from "./generator";
 import Messages from "./Messages";
 import { logger } from "./utility";
 import EventEmitter from "node:events";
+import events from "events";
+import moment from "moment";
 
 const launch = (stream: EventEmitter) => {
   app.get("/streams", async (req: Request, res: Response) => {
@@ -15,10 +16,24 @@ const launch = (stream: EventEmitter) => {
       Connection: "keep-alive",
     });
 
-    for await (const message of generator(stream)) {
-      Messages.set(message); //キャッシュ用
-      res.write("data: " + JSON.stringify(message));
-      res.write("\n\n");
+    const iterable = events.on(stream,'data');
+    for await (const [event] of iterable){
+        const datetime = moment(new Date(event.created_at));
+        const date = datetime.format("YYYY-MM-DD");
+        const time = datetime.format("h:mm:ss");
+        const dayOfMonth = datetime.format("MM/DD");
+
+        if (event.user) {
+            const src: string = event.user.profile_background_image_url_https == 'unkown' ? '' : event.user.profile_background_image_url_https
+            const message: Message = { id: event.id, name: event.user.name, text: event.text, src: src, date: date, time: time, dayOfMonth: dayOfMonth, urls: event.entities.urls };
+
+            //新たに受信したメッセージを出力
+            Messages.set(message); //キャッシュ用
+            res.write("data: " + JSON.stringify(message));
+            res.write("\n\n");
+        }else{
+            logger.debug("event.userが無いのでエラーを投げました");
+        }
     }
   });
 
