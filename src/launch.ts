@@ -3,10 +3,10 @@ import { Request, Response } from "express";
 import { generator } from "./generator";
 import Messages from "./Messages";
 import { logger } from "./utility";
+import EventEmitter from "node:events";
 
-const launch = (stream: any) => {
+const launch = (stream: EventEmitter) => {
   app.get("/streams", async (req: Request, res: Response) => {
-    console.log("listenerCount: ", stream.listenerCount("data"));
 
     //sseでの接続を宣言
     res.writeHead(200, {

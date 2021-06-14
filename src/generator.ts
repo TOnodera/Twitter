@@ -5,7 +5,7 @@ import { logger } from "./utility";
 
 async function* generator(stream: EventEmitter): AsyncGenerator<Message>{
     const iterable = events.on(stream,'data');
-    for await (const event of iterable){
+    for await (const [event] of iterable){
         const datetime = moment(new Date(event.created_at));
         const date = datetime.format("YYYY-MM-DD");
         const time = datetime.format("h:mm:ss");
