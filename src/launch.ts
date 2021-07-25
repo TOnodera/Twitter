@@ -3,39 +3,13 @@ import { Request, Response } from "express";
 import Messages from "./Messages";
 import { logger } from "./utility";
 import EventEmitter from "node:events";
-import events from "events";
-import moment from "moment";
+import StreamHandler from './StreamHandler';
 
 const launch = (stream: EventEmitter) => {
-  app.get("/streams", async (req: Request, res: Response) => {
 
-    //sseでの接続を宣言
-    res.writeHead(200, {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
-      Connection: "keep-alive",
-    });
-
-    const iterable = events.on(stream,'data');
-    for await (const [event] of iterable){
-        const datetime = moment(new Date(event.created_at));
-        const date = datetime.format("YYYY-MM-DD");
-        const time = datetime.format("h:mm:ss");
-        const dayOfMonth = datetime.format("MM/DD");
-
-        if (event.user) {
-            const src: string = event.user.profile_background_image_url_https == 'unkown' ? '' : event.user.profile_background_image_url_https
-            const message: Message = { id: event.id, name: event.user.name, text: event.text, src: src, date: date, time: time, dayOfMonth: dayOfMonth, urls: event.entities.urls };
-
-            //新たに受信したメッセージを出力
-            Messages.set(message); //キャッシュ用
-            res.write("data: " + JSON.stringify(message));
-            res.write("\n\n");
-        }else{
-            logger.debug("event.userが無いのでエラーを投げました");
-        }
-    }
-  });
+  //メイン処理
+  const streamHandler = new StreamHandler(stream);
+  app.get("/streams",streamHandler.handler);
 
   //ページに最初に訪問した時に１度だけ実行される。サーバーのインメモリのキャッシュから最大１００件のデータを返す
   app.get("/start", (req: Request, res: Response) => {
